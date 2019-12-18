@@ -3,17 +3,11 @@
 ## Prerequisites
 
 1. `K8s` cluster / `Minikube` with your dev machine `kubectl` configured for it.
-1. Helm installed on your dev machine
+1. Helm (3.x or later) installed on your dev machine
 
 ## Setup
 
-If helm (<=2.x) has not been installed to the cluster before:
-
-```bash
-helm init --client-only
-```
-
-**Helm >=3.x** - No need for any initialization.
+## Build
 
 To build:
 
@@ -21,14 +15,26 @@ To build:
 make build
 ```
 
-To install:
+## Install
 
 ```bash
-helm install --name ignite ./ignite
+kubectl apply -f ./dist/ignite-{{VERSION}}.yaml
 ```
 
-To uninstall:
+Or:
 
 ```bash
-helm delete --purge ignite
+kubectl apply -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
+```
+
+## Uninstall
+
+```bash
+kubectl delete -f ./dist/ignite-{{VERSION}}.yaml
+```
+
+Or:
+
+```bash
+kubectl delete -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
 ```

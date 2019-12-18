@@ -1,14 +1,5 @@
 FORCE:
 
-install:
-	helm install --name ignite ./ignite
-
-uninstall:
-	helm delete --purge ignite
-
-build-helm-2:
-	helm template --name ignite ./ignite > ./dist/ignite.yaml
-
 build: TIMESTAMP ?= $(shell date +%Y%m%d-%H%M -u)
 build:
 	helm template --set timestamp=${TIMESTAMP} -f ./ignite/env/stg.yaml ignite ./ignite > ./dist/ignite-${TIMESTAMP}.yaml
