@@ -1,0 +1,3 @@
+env: stg
+storage_class_provisioner: "kubernetes.io/gce-pd"
+storage_class_parameters: { "replication-type": "none", "type": "pd-standard" }

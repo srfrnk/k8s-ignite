@@ -5,10 +5,6 @@
         "name": "ignite-persistence-storage-class",
         "namespace": "ignite"
     },
-    "parameters": {
-        "replication-type": "none",
-        "type": "pd-standard",
-        "zones": "europe-west1-b"
-    },
-    "provisioner": "kubernetes.io/gce-pd"
+    "provisioner": {{ .Values.storage_class_provisioner }},
+    "parameters": {{ .Values.storage_class_parameters | toJson }}
 }
