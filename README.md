@@ -27,6 +27,18 @@ Or:
 kubectl apply -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
 ```
 
+Activate the cluster:
+
+```bash
+make activate
+```
+
+Start proxy:
+
+```bash
+make start-proxy
+```
+
 ## Uninstall
 
 ```bash

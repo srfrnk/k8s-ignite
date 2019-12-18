@@ -1,8 +1,8 @@
 FORCE:
 
 build: TIMESTAMP ?= $(shell date +%Y%m%d-%H%M -u)
-build:
-	helm template --set timestamp=${TIMESTAMP} -f ./ignite/env/stg.yaml ignite ./ignite > ./dist/ignite-${TIMESTAMP}.yaml
+build: FORCE
+	helm template --set timestamp=${TIMESTAMP} -f ./ignite/env/dev.yaml ignite ./ignite > ./dist/ignite-${TIMESTAMP}.yaml
 
 	@printf "\033[1;31m"
 	@printf "Dist file renamed for DEBUG"
@@ -10,7 +10,10 @@ build:
 	@printf "\n"
 	@mv ./dist/ignite-${TIMESTAMP}.yaml ./dist/ignite.yaml
 
-ignite:
+activate: FORCE
 	kubectl exec ignite-0 --namespace=ignite -- \
 		/bin/bash -c "cd /opt/ignite/apache-ignite-fabric/bin/ && \
 		./control.sh --activate"
+
+start-proxy: FORCE
+	kubectl port-forward -n ignite svc/ignite 8080:8080 10800:10800 10900:10900

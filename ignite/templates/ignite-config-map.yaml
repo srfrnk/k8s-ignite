@@ -1,0 +1,11 @@
+{
+    "apiVersion": "v1",
+    "kind": "ConfigMap",
+    "metadata": {
+        "name": "ignite",
+        "namespace": "ignite"
+    },
+    "data": {
+        "kube-persistence-and-wal.xml": {{ .Files.Get "configs/kube-persistence-and-wal.xml" | quote }}
+    }
+}

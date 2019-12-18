@@ -29,7 +29,7 @@
                             },
                             {
                                 "name": "CONFIG_URI",
-                                "value": "https://raw.githubusercontent.com/apache/ignite/master/modules/kubernetes/config/example-kube-persistence-and-wal.xml"
+                                "value": "/configs/kube-persistence-and-wal.xml"
                             },
                             {
                                 "name": "IGNITE_QUIET",
@@ -73,9 +73,21 @@
                             {
                                 "mountPath": "/persistence",
                                 "name": "ignite-persistence"
-                            }
+                            },
+                            {
+                                "name": "configmap",
+                                "mountPath": "/configs",
+                            },
                         ]
                     }
+                ],
+                "volumes": [
+                    {
+                        "name": "configmap",
+                        "configMap": {
+                            "name": "ignite",
+                        },
+                    },
                 ],
                 "serviceAccountName": "ignite"
             }
@@ -91,7 +103,7 @@
                     ],
                     "resources": {
                         "requests": {
-                            "storage": "1Gi"
+                            "storage": {{ .Values.persistence_storage_request | quote }}
                         }
                     },
                     "storageClassName": "ignite-persistence-storage-class"
@@ -107,7 +119,7 @@
                     ],
                     "resources": {
                         "requests": {
-                            "storage": "1Gi"
+                            "storage": {{ .Values.wal_storage_request | quote }}
                         }
                     },
                     "storageClassName": "ignite-wal-storage-class"
