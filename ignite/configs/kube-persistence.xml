@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="         http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans.xsd         http://www.springframework.org/schema/util         http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="workDirectory" value="/persistence/work"/>
+        <!-- Enabling Apache Ignite Persistent Store. -->
+        <property name="dataStorageConfiguration">
+            <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+                <property name="defaultDataRegionConfiguration">
+                    <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                        <property name="persistenceEnabled" value="true"/>
+                    </bean>
+                </property>
+                <!--
+                   Sets a path to the root directory where data and indexes are
+                   to be persisted. It's assumed the directory is on a dedicated disk.
+                -->
+                <property name="storagePath" value="/persistence"/>
+                <!--
+                    Sets a path to the directory where WAL is stored.
+                    It's assumed the directory is on a dedicated disk.
+                -->
+                <property name="walPath" value="/wal"/>
+                <!--
+                    Sets a path to the directory where WAL archive is stored.
+                    It's assumed the directory is on the same drive with the WAL files.
+                -->
+                <property name="walArchivePath" value="/wal/archive"/>
+            </bean>
+        </property>
+
+        <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <!--
+                    Enables Kubernetes IP finder and setting custom namespace name.
+                    -->
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder">
+                        <property name="namespace" value="ignite"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+</beans>
