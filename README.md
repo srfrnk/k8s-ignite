@@ -2,16 +2,23 @@
 
 ## Prerequisites
 
-1. `K8s` cluster / `Minikube` with your local `kubectl` configured for it.
-1. Helm installed
-1.
+1. `K8s` cluster / `Minikube` with your dev machine `kubectl` configured for it.
+1. Helm installed on your dev machine
 
 ## Setup
 
-If helm has not been installed to the cluster before:
+If helm (<=2.x) has not been installed to the cluster before:
 
 ```bash
-helm init
+helm init --client-only
+```
+
+**Helm >=3.x** - No need for any initialization.
+
+To build:
+
+```bash
+make build
 ```
 
 To install:

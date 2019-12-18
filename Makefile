@@ -6,9 +6,11 @@ install:
 uninstall:
 	helm delete --purge ignite
 
+build-helm-2:
+	helm template --name ignite ./ignite > ./dist/ignite.yaml
+
 build:
-	helm install --dry-run --debug --name ignite ./ignite |\
-		awk 'BEGIN {found = 0} {if (found || $$0 ~ /---/) {found = 1; print}}' > ./dist/ignite.yaml
+	helm template ignite ./ignite > ./dist/ignite.yaml
 
 ignite:
 	kubectl exec ignite-0 --namespace=ignite -- \
