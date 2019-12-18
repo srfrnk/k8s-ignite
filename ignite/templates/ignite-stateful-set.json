@@ -1,0 +1,118 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "metadata": {
+        "name": "ignite",
+        "namespace": "ignite"
+    },
+    "spec": {
+        "replicas": 2,
+        "selector": {
+            "matchLabels": {
+                "app": "ignite"
+            }
+        },
+        "serviceName": "ignite",
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "ignite"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "env": [
+                            {
+                                "name": "OPTION_LIBS",
+                                "value": "ignite-kubernetes,ignite-rest-http"
+                            },
+                            {
+                                "name": "CONFIG_URI",
+                                "value": "https://raw.githubusercontent.com/apache/ignite/master/modules/kubernetes/config/example-kube-persistence-and-wal.xml"
+                            },
+                            {
+                                "name": "IGNITE_QUIET",
+                                "value": "false"
+                            },
+                            {
+                                "name": "JVM_OPTS",
+                                "value": "-Djava.net.preferIPv4Stack=true"
+                            }
+                        ],
+                        "image": "apacheignite/ignite:2.6.0",
+                        "name": "ignite",
+                        "ports": [
+                            {
+                                "containerPort": 11211
+                            },
+                            {
+                                "containerPort": 47100
+                            },
+                            {
+                                "containerPort": 47500
+                            },
+                            {
+                                "containerPort": 49112
+                            },
+                            {
+                                "containerPort": 10800
+                            },
+                            {
+                                "containerPort": 8080
+                            },
+                            {
+                                "containerPort": 10900
+                            }
+                        ],
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/wal",
+                                "name": "ignite-wal"
+                            },
+                            {
+                                "mountPath": "/persistence",
+                                "name": "ignite-persistence"
+                            }
+                        ]
+                    }
+                ],
+                "serviceAccountName": "ignite"
+            }
+        },
+        "volumeClaimTemplates": [
+            {
+                "metadata": {
+                    "name": "ignite-persistence"
+                },
+                "spec": {
+                    "accessModes": [
+                        "ReadWriteOnce"
+                    ],
+                    "resources": {
+                        "requests": {
+                            "storage": "1Gi"
+                        }
+                    },
+                    "storageClassName": "ignite-persistence-storage-class"
+                }
+            },
+            {
+                "metadata": {
+                    "name": "ignite-wal"
+                },
+                "spec": {
+                    "accessModes": [
+                        "ReadWriteOnce"
+                    ],
+                    "resources": {
+                        "requests": {
+                            "storage": "1Gi"
+                        }
+                    },
+                    "storageClassName": "ignite-wal-storage-class"
+                }
+            }
+        ]
+    }
+}

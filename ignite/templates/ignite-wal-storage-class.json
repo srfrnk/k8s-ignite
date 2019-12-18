@@ -1,0 +1,14 @@
+{
+    "apiVersion": "storage.k8s.io/v1",
+    "kind": "StorageClass",
+    "metadata": {
+        "name": "ignite-wal-storage-class",
+        "namespace": "ignite"
+    },
+    "parameters": {
+        "replication-type": "none",
+        "type": "pd-standard",
+        "zones": "europe-west1-b"
+    },
+    "provisioner": "kubernetes.io/gce-pd"
+}
