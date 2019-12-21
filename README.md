@@ -7,6 +7,24 @@
 
 ## Setup
 
+- **Use this step to install a pre-built version.**
+- **Skip to next section to build a version from latest sources.**
+
+- Open the [distribution folder](https://github.com/srfrnk/k8s-ignite/blob/master/dist) in your browser.
+- Choose a version yaml - e.g. `ignite-20191221-1508.yaml`
+
+Install by running:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
+```
+
+Remove by running:
+
+```bash
+kubectl delete -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
+```
+
 ## Build
 
 To build:
@@ -18,13 +36,7 @@ make build
 ## Install
 
 ```bash
-kubectl apply -f ./dist/ignite-{{VERSION}}.yaml
-```
-
-Or:
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
+kubectl apply -f ./dist/ignite.yaml
 ```
 
 Activate the cluster:
@@ -42,11 +54,5 @@ make start-proxy
 ## Uninstall
 
 ```bash
-kubectl delete -f ./dist/ignite-{{VERSION}}.yaml
-```
-
-Or:
-
-```bash
-kubectl delete -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
+kubectl delete -f ./dist/ignite.yaml
 ```

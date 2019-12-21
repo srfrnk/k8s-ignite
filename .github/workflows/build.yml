@@ -1,0 +1,46 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v1
+
+      - name: Get current time
+        uses: srfrnk/current-time@master
+        id: current-time
+        with:
+          format: YYYYMMDD-HHmm
+
+      - name: Get Helm
+        run: |-
+          wget https://get.helm.sh/helm-v3.0.2-linux-amd64.tar.gz
+          tar -xf helm-v3.0.2-linux-amd64.tar.gz
+          mv linux-amd64/helm helm
+          rm -rf linux-amd64 helm-v3.0.2-linux-amd64.tar.gz
+
+      - name: Build
+        env:
+          TIMESTAMP: "${{ steps.current-time.outputs.formattedTime }}"
+        run: |
+          ./helm template ignite ./ignite-chart --set timestamp=${TIMESTAMP} -f ./ignite-chart/env/dev.yaml > ./dist/ignite-${TIMESTAMP}.yaml
+
+      - name: Commit distribution files
+        env:
+          TIMESTAMP: "${{ steps.current-time.outputs.formattedTime }}"
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add dist/.
+          git commit -m "Version Distribution $TIMESTAMP" -a
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

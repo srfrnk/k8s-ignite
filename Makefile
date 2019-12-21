@@ -2,13 +2,12 @@ FORCE:
 
 build: TIMESTAMP ?= $(shell date +%Y%m%d-%H%M -u)
 build: FORCE
-	helm template --set timestamp=${TIMESTAMP} -f ./ignite-chart/env/dev.yaml ignite ./ignite-chart > ./dist/ignite-${TIMESTAMP}.yaml
-
+	helm template ignite ./ignite-chart --set timestamp=${TIMESTAMP} -f ./ignite-chart/env/dev.yaml > ./dist/ignite-${TIMESTAMP}.yaml
+	mv ./dist/ignite-${TIMESTAMP}.yaml ./dist/ignite.yaml
 	@printf "\033[1;31m"
 	@printf "Dist file renamed for DEBUG"
 	@printf "\033[0m"
 	@printf "\n"
-	@mv ./dist/ignite-${TIMESTAMP}.yaml ./dist/ignite.yaml
 
 activate: FORCE
 	kubectl exec ignite-0 --namespace=ignite -- \
