@@ -29,7 +29,8 @@ jobs:
         env:
           TIMESTAMP: "${{ steps.current-time.outputs.formattedTime }}"
         run: |
-          ./helm template ignite ./ignite-chart --set timestamp=${TIMESTAMP} -f ./ignite-chart/env/dev.yaml > ./dist/ignite-${TIMESTAMP}.yaml
+          ./helm template ignite ./ignite-chart --set timestamp=${TIMESTAMP} -f ./ignite-chart/env/minikube.yaml > ./dist/ignite-minikube-${TIMESTAMP}.yaml
+          ./helm template ignite ./ignite-chart --set timestamp=${TIMESTAMP} -f ./ignite-chart/env/gcp.yaml > ./dist/ignite-gcp-${TIMESTAMP}.yaml
 
       - name: Commit distribution files
         env:

@@ -11,7 +11,7 @@
 - **Skip to next section to build a version from latest sources.**
 
 - Open the [distribution folder](https://github.com/srfrnk/k8s-ignite/blob/master/dist) in your browser.
-- Choose a version yaml - e.g. `ignite-20191221-1508.yaml`
+- Choose a version yaml - e.g. `ignite-minikube-20191221-1508.yaml`
 
 Install by running:
 
@@ -36,7 +36,7 @@ make build
 ## Install
 
 ```bash
-kubectl apply -f ./dist/ignite.yaml
+kubectl apply -f ./dist/ignite-minikube.yaml
 ```
 
 Activate the cluster:
@@ -54,5 +54,5 @@ make start-proxy
 ## Uninstall
 
 ```bash
-kubectl delete -f ./dist/ignite.yaml
+kubectl delete -f ./dist/ignite-minikube.yaml
 ```

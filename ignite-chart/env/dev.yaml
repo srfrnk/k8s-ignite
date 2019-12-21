@@ -1,5 +1,0 @@
-env: dev
-storage_class_provisioner: "k8s.io/minikube-hostpath"
-storage_class_parameters: null
-persistence_storage_request: "1Gi"
-wal_storage_request: "1Gi"
