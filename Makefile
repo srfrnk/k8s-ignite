@@ -2,7 +2,7 @@ FORCE:
 
 build: TIMESTAMP ?= $(shell date +%Y%m%d-%H%M -u)
 build: FORCE
-	helm template --set timestamp=${TIMESTAMP} -f ./ignite/env/dev.yaml ignite ./ignite > ./dist/ignite-${TIMESTAMP}.yaml
+	helm template --set timestamp=${TIMESTAMP} -f ./ignite-chart/env/dev.yaml ignite ./ignite-chart > ./dist/ignite-${TIMESTAMP}.yaml
 
 	@printf "\033[1;31m"
 	@printf "Dist file renamed for DEBUG"
