@@ -1,0 +1,278 @@
+---
+# Source: ignite/templates/ignite-namespace.yaml
+{
+    "apiVersion": "v1",
+    "kind": "Namespace",
+    "metadata": {
+        "name": "ignite"
+    }
+}
+---
+# Source: ignite/templates/ignite-config-map.yaml
+{
+    "apiVersion": "v1",
+    "kind": "ConfigMap",
+    "metadata": {
+        "name": "ignite",
+        "namespace": "ignite"
+    },
+    "data": {
+        "kube-persistence-and-wal.xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<!--\n  Licensed to the Apache Software Foundation (ASF) under one or more\n  contributor license agreements.  See the NOTICE file distributed with\n  this work for additional information regarding copyright ownership.\n  The ASF licenses this file to You under the Apache License, Version 2.0\n  (the \"License\"); you may not use this file except in compliance with\n  the License.  You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n-->\n\n<!--\n    Configuration example with Kubernetes IP finder and Ignite persistence enabled.\n    WAL files and database files are stored in separate disk drives.\n-->\n<beans xmlns=\"http://www.springframework.org/schema/beans\"\n       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n       xsi:schemaLocation=\"\n        http://www.springframework.org/schema/beans\n        http://www.springframework.org/schema/beans/spring-beans.xsd\">\n\n    <bean class=\"org.apache.ignite.configuration.IgniteConfiguration\">\n\n        <!-- Enabling Apache Ignite Persistent Store. -->\n        <property name=\"dataStorageConfiguration\">\n            <bean class=\"org.apache.ignite.configuration.DataStorageConfiguration\">\n\n                <property name=\"defaultDataRegionConfiguration\">\n                    <bean class=\"org.apache.ignite.configuration.DataRegionConfiguration\">\n                        <property name=\"persistenceEnabled\" value=\"true\"/>\n                    </bean>\n                </property>\n\n                <!--\n                   Sets a path to the root directory where data and indexes are\n                   to be persisted. It's assumed the directory is on a dedicated disk.\n                -->\n                <property name=\"storagePath\" value=\"/persistence\"/>\n\n                <!--\n                    Sets a path to the directory where WAL is stored.\n                    It's assumed the directory is on a dedicated disk.\n                -->\n                <property name=\"walPath\" value=\"/wal\"/>\n\n                <!--\n                    Sets a path to the directory where WAL archive is stored.\n                    It's assumed the directory is on the same drive with the WAL files.\n                -->\n                <property name=\"walArchivePath\" value=\"/wal/archive\"/>\n            </bean>\n        </property>\n\n        <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->\n        <property name=\"discoverySpi\">\n            <bean class=\"org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi\">\n                <property name=\"ipFinder\">\n                    <!--\n                        Enables Kubernetes IP finder and setting custom namespace and service names.\n                    -->\n                    <bean class=\"org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder\">\n                        <property name=\"namespace\" value=\"ignite\"/>\n                    </bean>\n                </property>\n            </bean>\n        </property>\n    </bean>\n</beans>"
+    }
+}
+---
+# Source: ignite/templates/ignite-persistence-storage-class.yaml
+{
+    "apiVersion": "storage.k8s.io/v1",
+    "kind": "StorageClass",
+    "metadata": {
+        "name": "ignite-persistence-storage-class",
+        "namespace": "ignite"
+    },
+    "provisioner": k8s.io/minikube-hostpath,
+    "parameters": null
+}
+---
+# Source: ignite/templates/ignite-wal-storage-class.yaml
+{
+    "apiVersion": "storage.k8s.io/v1",
+    "kind": "StorageClass",
+    "metadata": {
+        "name": "ignite-wal-storage-class",
+        "namespace": "ignite"
+    },
+    "provisioner": k8s.io/minikube-hostpath,
+    "parameters": null
+}
+---
+# Source: ignite/templates/ignite-service-account.yaml
+{
+    "apiVersion": "v1",
+    "kind": "ServiceAccount",
+    "metadata": {
+        "name": "ignite",
+        "namespace": "ignite"
+    }
+}
+---
+# Source: ignite/templates/ignite-account-role.yaml
+{
+    "apiVersion": "rbac.authorization.k8s.io/v1beta1",
+    "kind": "ClusterRole",
+    "metadata": {
+        "name": "ignite",
+        "namespace": "ignite"
+    },
+    "rules": [
+        {
+            "apiGroups": [
+                ""
+            ],
+            "resources": [
+                "pods",
+                "endpoints"
+            ],
+            "verbs": [
+                "get",
+                "list",
+                "watch"
+            ]
+        }
+    ]
+}
+---
+# Source: ignite/templates/ignite-role-binding.yaml
+{
+    "apiVersion": "rbac.authorization.k8s.io/v1beta1",
+    "kind": "ClusterRoleBinding",
+    "metadata": {
+        "name": "ignite"
+    },
+    "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "ClusterRole",
+        "name": "ignite"
+    },
+    "subjects": [
+        {
+            "kind": "ServiceAccount",
+            "name": "ignite",
+            "namespace": "ignite"
+        }
+    ]
+}
+---
+# Source: ignite/templates/ignite-service.yaml
+{
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": {
+        "name": "ignite",
+        "namespace": "ignite"
+    },
+    "spec": {
+        "ports": [
+            {
+                "name": "rest",
+                "port": 8080,
+                "targetPort": 8080
+            },
+            {
+                "name": "sql",
+                "port": 10800,
+                "targetPort": 10800
+            },
+            {
+                "name": "thinclients",
+                "port": 10900,
+                "targetPort": 10900
+            }
+        ],
+        "selector": {
+            "app": "ignite"
+        },
+        "sessionAffinity": "ClientIP",
+        "type": "LoadBalancer"
+    }
+}
+---
+# Source: ignite/templates/ignite-stateful-set.yaml
+{
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "metadata": {
+        "name": "ignite",
+        "namespace": "ignite"
+    },
+    "spec": {
+        "replicas": 2,
+        "selector": {
+            "matchLabels": {
+                "app": "ignite"
+            }
+        },
+        "serviceName": "ignite",
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "ignite"
+                }
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "env": [
+                            {
+                                "name": "OPTION_LIBS",
+                                "value": "ignite-kubernetes,ignite-rest-http"
+                            },
+                            {
+                                "name": "CONFIG_URI",
+                                "value": "/configs/kube-persistence-and-wal.xml"
+                            },
+                            {
+                                "name": "IGNITE_QUIET",
+                                "value": "false"
+                            },
+                            {
+                                "name": "JVM_OPTS",
+                                "value": "-Djava.net.preferIPv4Stack=true"
+                            }
+                        ],
+                        "image": "apacheignite/ignite:2.6.0",
+                        "name": "ignite",
+                        "ports": [
+                            {
+                                "containerPort": 11211
+                            },
+                            {
+                                "containerPort": 47100
+                            },
+                            {
+                                "containerPort": 47500
+                            },
+                            {
+                                "containerPort": 49112
+                            },
+                            {
+                                "containerPort": 10800
+                            },
+                            {
+                                "containerPort": 8080
+                            },
+                            {
+                                "containerPort": 10900
+                            }
+                        ],
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/wal",
+                                "name": "ignite-wal"
+                            },
+                            {
+                                "mountPath": "/persistence",
+                                "name": "ignite-persistence"
+                            },
+                            {
+                                "name": "configmap",
+                                "mountPath": "/configs",
+                            },
+                        ]
+                    }
+                ],
+                "volumes": [
+                    {
+                        "name": "configmap",
+                        "configMap": {
+                            "name": "ignite",
+                        },
+                    },
+                ],
+                "serviceAccountName": "ignite"
+            }
+        },
+        "volumeClaimTemplates": [
+            {
+                "metadata": {
+                    "name": "ignite-persistence"
+                },
+                "spec": {
+                    "accessModes": [
+                        "ReadWriteOnce"
+                    ],
+                    "resources": {
+                        "requests": {
+                            "storage": "1Gi"
+                        }
+                    },
+                    "storageClassName": "ignite-persistence-storage-class"
+                }
+            },
+            {
+                "metadata": {
+                    "name": "ignite-wal"
+                },
+                "spec": {
+                    "accessModes": [
+                        "ReadWriteOnce"
+                    ],
+                    "resources": {
+                        "requests": {
+                            "storage": "1Gi"
+                        }
+                    },
+                    "storageClassName": "ignite-wal-storage-class"
+                }
+            }
+        ]
+    }
+}
+---
+# Source: ignite/templates/info.yaml
+#########################################
+
+# Name: ignite
+# Environment: dev
+# Timestamp: 20191221-1552
+
+#########################################
