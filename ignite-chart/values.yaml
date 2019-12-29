@@ -1,0 +1,3 @@
+ignite-web:
+  repository: "docker.pkg.github.com/srfrnk/ignite"
+  version: "20191228-0839"

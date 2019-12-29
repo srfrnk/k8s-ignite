@@ -9,6 +9,16 @@ build: FORCE
 	@printf "\033[0m"
 	@printf "\n"
 
+set-registry-secrets:
+	kubectl create secret generic -n ignite regcred \
+		--from-file=.dockerconfigjson=${HOME}/.docker/config.json \
+		--type=kubernetes.io/dockerconfigjson
+
+	kubectl create secret generic -n ignite-web-console regcred \
+		--from-file=.dockerconfigjson=${HOME}/.docker/config.json \
+		--type=kubernetes.io/dockerconfigjson
+
+
 activate: FORCE
 	kubectl exec ignite-0 --namespace=ignite -- \
 		/bin/bash -c "cd /opt/ignite/apache-ignite-fabric/bin/ && \

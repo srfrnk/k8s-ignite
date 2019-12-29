@@ -4,6 +4,18 @@
 
 1. `K8s` cluster / `Minikube` with your dev machine `kubectl` configured for it.
 1. Helm (3.x or later) installed on your dev machine
+1. Your K8s cluster should have docker access to Github Package
+
+## Docker access to Github Packages
+
+Run (use your Github `Username` and `Personal Access Token` along with your email):
+
+```bash
+docker login -u USERNAME -p TOKEN docker.pkg.github.com
+```
+
+This will create/add your auth details to `~/.docker/config.json`.
+At the setup step you will use this file to create a secret to allow access to the Github Packages docker image repository.
 
 ## Setup
 
@@ -17,6 +29,18 @@ Install by running:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/srfrnk/k8s-ignite/master/dist/ignite-{{VERSION}}.yaml
+```
+
+To enable K8s access to Github Packages - run:
+
+```bash
+make set-registry-secrets
+```
+
+Wait for all workloads to run. Then activate the cluster:
+
+```bash
+make activate
 ```
 
 Remove by running:
@@ -39,7 +63,13 @@ make build
 kubectl apply -f ./dist/ignite-minikube.yaml
 ```
 
-Activate the cluster:
+To enable K8s access to Github Packages - run:
+
+```bash
+make set-registry-secrets
+```
+
+Wait for all workloads to run. Then activate the cluster:
 
 ```bash
 make activate
